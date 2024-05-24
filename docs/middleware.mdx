@@ -1,0 +1,205 @@
+---
+sidebar_position: 4
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Middleware
+
+## Introduction
+
+Middleware is a mechanism that allows you to execute code before or after a handler is executed. Middleware can be used to perform tasks such as authentication, logging, and more.
+
+In Neutomic, middleware is implemented as a class that implements the `MiddlewareInterface` interface. The `MiddlewareInterface` interface has a single method, `process()`, which takes a `Context` object and a `RequestInterface` object as arguments and returns a `ResponseInterface` object.
+
+Here is an example of a simple middleware that adds a header to the response:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Middleware;
+
+use Neu\Component\Http\Message\RequestInterface;
+use Neu\Component\Http\Message\ResponseInterface;
+use Neu\Component\Http\Runtime\Context;
+use Neu\Component\Http\Runtime\Handler\HandlerInterface;
+use Neu\Component\Http\Runtime\Middleware\MiddlewareInterface;
+
+/**
+ * An example middleware that adds a header to the response.
+ */
+final readonly class ExampleMiddleware implements MiddlewareInterface
+{
+    /**
+     * Process the incoming request.
+     */
+    public function process(Context $context, RequestInterface $request, HandlerInterface $next): ResponseInterface
+    {
+        $response = $next->handle($context, $request);
+
+        return $response->withHeader('X-Example-Middleware', 'Hello, World!');
+    }
+}
+```
+
+In the example above, the `ExampleMiddleware` class implements the `MiddlewareInterface` interface and adds a header to the response. The `process()` method takes a `Context` object, a `RequestInterface` object, and a `HandlerInterface` object as arguments. The `HandlerInterface` object is used to call the next middleware in the chain or the handler if there are no more middleware to call.
+
+## Prioritized Middleware
+
+Neutomic loads all middleware classes from the container and executes them in the order they are defined in the container (FIFO). You can define the order of middleware by implementing the `PrioritizedMiddlewareInterface` interface and returning a priority value from the `getPriority()` method.
+
+An example of a middleware that implements the `PrioritizedMiddlewareInterface` interface:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Middleware;
+
+use Neu\Component\Http\Message\RequestInterface;
+use Neu\Component\Http\Message\ResponseInterface;
+use Neu\Component\Http\Runtime\Context;
+use Neu\Component\Http\Runtime\Handler\HandlerInterface;
+use Neu\Component\Http\Runtime\Middleware\PrioritizedMiddlewareInterface;
+
+use microtime;
+
+/**
+ * An example middleware that has a high priority.
+ */
+final readonly class XExecutionTimeMiddleware implements PrioritizedMiddlewareInterface
+{
+    /**
+     * Process the incoming request.
+     */
+    public function process(Context $context, RequestInterface $request, HandlerInterface $next): ResponseInterface
+    {
+        $start = microtime(true);
+        $response = $next->handle($context, $request);
+        $end = microtime(true);
+
+        return $response
+            ->withHeader('X-Execution-Start', (string) $start)
+            ->withHeader('X-Execution-End', (string) $end)
+            ->withHeader('X-Execution-Time', (string) ($end - $start))
+        ;
+    }
+    
+    /**
+     * Get the priority of the middleware.
+     */
+    public function getPriority(): int
+    {
+        return 100;
+    }
+}
+```
+
+In the example above, the `XExecutionTimeMiddleware` class implements the `PrioritizedMiddlewareInterface` interface and adds headers to the response that show the execution time of the request. The `getPriority()` method returns a priority value of `100`, which is higher than the default priority value of `0`.
+
+## Middleware and Dependency Injection
+
+Neutomic projects use auto-discovery by default, which means that all classes, including middleware classes, are automatically registered in the container. However, you can also manually register middleware class in the container like any other service.
+
+Here is an example of manually registering a middleware class in the container:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App;
+
+use Neu;
+use Neu\Component\DependencyInjection\Definition\Definition;
+use Neu\Component\DependencyInjection\ContainerBuilder;
+use Neu\Component\DependencyInjection\ContainerBuilderInterface;
+use Neu\Component\DependencyInjection\Project;
+
+use function Neu\Framework\entrypoint;
+
+require_once __DIR__ . '/../vendor/autoload.php';
+
+
+entrypoint(static function(Project $project): ContainerBuilderInterface {
+    $builder = ContainerBuilder::create($project);
+
+    // register your services, and extensions here
+    ...
+
+    // register the middleware
+    $builder->addDefinition(
+        Definition::ofType(Middleware\ExampleMiddleware::class),
+    );
+
+    return $builder;
+});
+```
+
+In the example above, the `ExampleMiddleware` class is manually registered in the container using the `addDefinition()` method of the `ContainerBuilder` class.
+
+## Ignoring Middleware
+
+If you have a middleware registered in the container, but you wish to not use it, you can ignore it by adding it to the `http.runtime.hook.enqueue-middleware.ignore` configuration option in your configuration file:
+
+
+<Tabs
+    defaultValue="php"
+    values={[
+        {label: 'PHP', value: 'php'},
+        {label: 'YAML', value: 'yaml'},
+        {label: 'JSON', value: 'json'},
+    ]}>
+    <TabItem value="php">
+    ```php
+    <?php
+
+    declare(strict_types=1);
+
+    return [
+        'http' => [
+            'runtime' => [
+                'hook' => [
+                    'enqueue-middleware' => [
+                        'ignore' => [
+                            App\Middleware\ExampleMiddleware::class,
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ];
+    ```
+    </TabItem>
+    <TabItem value="yaml">
+    ```yaml
+    http:
+        runtime:
+            hook:
+                enqueue-middleware:
+                    ignore:
+                        - App\Middleware\ExampleMiddleware
+    ```
+    </TabItem>
+    <TabItem value="json">
+    ```json
+    {
+        "http": {
+            "runtime": {
+                "hook": {
+                    "enqueue-middleware": {
+                        "ignore": [
+                            "App\\Middleware\\ExampleMiddleware"
+                        ]
+                    }
+                }
+            }
+        }
+    }
+    ```
+    </TabItem>
+</Tabs>
