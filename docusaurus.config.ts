@@ -96,7 +96,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Neutomic. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Saif Eddin Gmati. Built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.oneLight,
