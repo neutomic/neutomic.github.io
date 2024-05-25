@@ -24,7 +24,7 @@ function HomepageHeader() {
                             Neutomic is a blazing fast asynchronous framework designed for building high-performance PHP applications.
                             Its non-blocking architecture and integrated toolset deliver exceptional speed and efficiency, making it ideal for demanding web applications.
                         </p>
-                        <CodeBlock language={'bash'}>{`composer create-project neutomic/skeleton my-project`}</CodeBlock>
+                        <CodeBlock language={'bash'}>{`composer create-project neutomic/skeleton:dev-main my-project`}</CodeBlock>
                         <div className={styles.buttons}>
                             <Link
                                 className="button button--secondary button--lg"

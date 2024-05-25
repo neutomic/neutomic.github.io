@@ -24,7 +24,7 @@ For additional functionality, you can optionally install the following PHP exten
 To create a new Neutomic project, execute the following command in your terminal:
 
 ```bash
-composer create-project neutomic/skeleton my-project
+composer create-project neutomic/skeleton:dev-main my-project
 ```
 
 This command will generate a new Neutomic project in the my-project directory. Next, navigate to the project directory and start the development server with the following commands:
