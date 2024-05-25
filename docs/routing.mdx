@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 10
 ---
 
 import Tabs from '@theme/Tabs';
@@ -9,83 +9,11 @@ import TabItem from '@theme/TabItem';
 
 Routing is the process of determining what handler to use for an incoming request.
 
+## Defining Routes
+
 In Neutomic, routing is done using one of the following methods:
 
-## Extension
-
-The router dependency injection extension is responsible for registering all routing related services in the container. You can register the router extension by adding it to the container builder:
-
-```php
-<?php
-
-declare(strict_types=1);
-
-namespace App;
-
-use Neu;
-use Neu\Component\DependencyInjection\ContainerBuilder;
-use Neu\Component\DependencyInjection\ContainerBuilderInterface;
-use Neu\Component\DependencyInjection\Project;
-
-use function Neu\Framework\entrypoint;
-
-require_once __DIR__ . '/../vendor/autoload.php';
-
-entrypoint(static function(Project $project): ContainerBuilderInterface {
-    $builder = ContainerBuilder::create($project);
-   
-    $builder->addExtensions([
-        ...
-        new Neu\Component\Http\Router\DependencyInjection\RouterExtension(),
-        ...
-    ]);
-
-    return $builder;
-});
-```
-
-The router extension registers the following services in the container:
-
-- `Neu\Component\Http\Router\Route\Registry\RegistryInterface`: The route registry.
-- `Neu\Component\Http\Router\RouterInterface`: The router.
-- `Neu\Component\Http\Router\Matcher\MatcherInterface`: The route matcher.
-- `Neu\Component\Http\Router\Generator\GeneratorInterface`: The route generator.
-
-## Configuration
-
-The router extension also allows you to configure the router. You can configure the router by defining the following parameters in the project configuration under the `http.router` key:
-
-```php
-/**
- * @psalm-type Configuration = array{
- *     generator?: array{
- *         registry?: non-empty-string,
- *     },
- *     matcher?: array{
- *         registry?: non-empty-string,
- *         cache-store?: non-empty-string,
- *     },
- *     router?: array{
- *         generator?: non-empty-string,
- *         matcher?: non-empty-string,
- *     },
- *     hooks?: array{
- *         register-routes?: array{
- *             registry?: non-empty-string,
- *         },
- *     },
- * }
- */
-```
-
-- `http.router.generator.registry`: The service identifier of the route registry used by the route generator.
-- `http.router.matcher.registry`: The service identifier of the route registry used by the route matcher.
-- `http.router.matcher.cache-store`: The service identifier of the cache store used by the route matcher.
-- `http.router.router.generator`: The service identifier of the route generator used by the router.
-- `http.router.router.matcher`: The service identifier of the route matcher used by the router.
-- `http.router.hooks.register-routes.registry`: The service identifier of the route registry used by the register routes hook.
-
-## Attribute Routing
+### Attribute Routing
 
 Attribute routing uses attributes to define routes. It is the most common way to define routes in Neutomic.
 
@@ -152,7 +80,7 @@ final readonly class IndexHandler implements HandlerInterface
 
 The `IndexHandler` class now has two routes: one for the root path (`/`) and one for the `/about` path.
 
-## Registry Routing
+### Registry Routing
 
 Registry routing uses a registry to define routes. It is less common than attribute routing but can be useful in some cases.
 
@@ -228,3 +156,40 @@ entrypoint(static function(Project $project): ContainerBuilderInterface {
 
 Now, when a request is made to the `/index` path, the `IndexHandler` class will be used to handle the request.
 
+## Generating URLs
+
+You can generate URLs for routes using the `GeneratorInterface` service.
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Handler;
+
+use Neu\Component\Http\Message\Method;
+use Neu\Component\Http\Message\RequestInterface;
+use Neu\Component\Http\Message\ResponseInterface;
+use Neu\Component\Http\Message\Response;
+use Neu\Component\Http\Router\Generator\GeneratorInterface;
+use Neu\Component\Http\Router\Route\Route;
+use Neu\Component\Http\Runtime\Context;
+use Neu\Component\Http\Runtime\Handler\HandlerInterface;
+
+#[Route(name: 'home', path: '/home', methods: [Method::Get])]
+final readonly class HomeHandler implements HandlerInterface
+{
+    public function __construct(
+        private GeneratorInterface $generator,
+    ) {}
+
+    public function handle(Context $context, RequestInterface $request): ResponseInterface
+    {
+        $url = $this->generator->generate('index');
+
+        return Response\redirect(location: $url);
+    }
+}
+```
+
+In the example above, the `HomeHandler` class generates a URL for the `index` route and redirects the user to that URL.

@@ -4,7 +4,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
   title: 'Neutomic',
-  tagline: 'build fast, run faster',
+  tagline: 'build fast, run faster.',
   favicon: 'images/white.svg',
 
   // Set the production url of your site here
@@ -84,6 +84,14 @@ const config: Config = {
             {
               label: 'Getting Started',
               to: '/docs/getting-started/introduction',
+            },
+            {
+              label: 'Routing',
+              to: '/docs/routing',
+            },
+            {
+              label: 'Middleware',
+              to: '/docs/middleware',
             },
           ],
         },

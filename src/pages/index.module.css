@@ -5,19 +5,54 @@
 
 .heroBanner {
   padding: 4rem 0;
-  text-align: center;
+  text-align: left; /* Change text-align to left */
   position: relative;
   overflow: hidden;
+}
+
+.heroContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.heroText {
+  flex: 1;
+}
+
+.heroLogo {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.heroLogo img {
+  max-width: 100%;
+  height: auto;
 }
 
 @media screen and (max-width: 996px) {
   .heroBanner {
     padding: 2rem;
   }
+
+  .heroContent {
+    flex-direction: column;
+    text-align: center; /* Center text on smaller screens */
+  }
+
+  .heroText {
+    margin-bottom: 2rem;
+  }
+
+  .heroLogo {
+    justify-content: center;
+  }
 }
 
 .buttons {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start; /* Align buttons to the left */
 }

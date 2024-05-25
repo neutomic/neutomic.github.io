@@ -1,0 +1,23 @@
+.features {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin: 4rem;
+}
+
+.featureContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.featureSection {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    padding: 20px;
+    margin: 0 8rem;
+}
+
+.featureDescription {
+    padding: 2rem 0;
+}

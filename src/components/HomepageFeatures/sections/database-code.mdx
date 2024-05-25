@@ -1,0 +1,47 @@
+import CodeBlock from '@theme/CodeBlock';
+
+<CodeBlock language="php" title="src/Handler/Article/IndexHandler.php">{`<?php
+
+declare(strict_types=1);
+
+namespace App\Handler\Article;
+
+use Neu\Component\Database\DatabaseInterface;
+use Neu\Component\Http\Message\Method;
+use Neu\Component\Http\Message\RequestInterface;
+use Neu\Component\Http\Message\ResponseInterface;
+use Neu\Component\Http\Message\Response;
+use Neu\Component\Http\Router\Route\Route;
+use Neu\Component\Http\Runtime\Context;
+use Neu\Component\Http\Runtime\Handler\HandlerInterface;
+
+#[Route(name: 'article:index', path: '/article', methods: [Method::Get])]
+final readonly class IndexHandler implements HandlerInterface
+{
+    public function __construct(
+        private DatabaseInterface $database,
+    ) {}
+
+    public function handle(Context $context, RequestInterface $request): ResponseInterface
+    {
+        // highlight-start
+        $query = $this->database->createQueryBuilder();
+        $expression = $this->database->createExpressionBuilder();
+
+        $articles = $query
+            ->select('*')
+            ->from('articles', 'a')
+            ->where(
+                $expression->equal('a.published', ':published'),
+            )
+            ->fetchAllAssociative([
+                'published' => true,
+            ])
+        ;
+        // highlight-end
+
+        return Response\json([
+            'articles' => $articles,
+        ]);
+    }
+}`}</CodeBlock>

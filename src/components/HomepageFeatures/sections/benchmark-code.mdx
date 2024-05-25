@@ -1,0 +1,25 @@
+import CodeBlock from '@theme/CodeBlock';
+import Admonition from '@theme/Admonition';
+
+<CodeBlock language="sh">{`➜ ab -n100000 -c100 -k http://localhost:8080/
+
+...
+
+Concurrency Level:      100
+Time taken for tests:   1.452 seconds
+Complete requests:      100000
+Failed requests:        0
+Keep-Alive requests:    100000
+Total transferred:      72600000 bytes
+HTML transferred:       47600000 bytes
+// highlight-start
+Requests per second:    68869.81 [#/sec] (mean)
+// highlight-end
+Time per request:       1.452 [ms] (mean)
+Time per request:       0.015 [ms] (mean, across all concurrent requests)
+Transfer rate:          48827.62 [Kbytes/sec] received
+`}</CodeBlock>
+
+<Admonition type="info">
+The benchmark was performed against [neutomic/skeleton](https://github.com/neutomic/skeleton) project, running on Macbook Pro M1, using PHP 8.3, in production mode.
+</Admonition>
