@@ -13,24 +13,37 @@ import DatabaseCode from './sections/database-code.mdx';
 import BenchmarkDescription from "./sections/benchmark-description.mdx";
 // @ts-ignore
 import BenchmarkCode from './sections/benchmark-code.mdx';
+// @ts-ignore
+import SSECode from './sections/sse-code.mdx';
+// @ts-ignore
+import SSEDescription from './sections/sse-description.mdx';
 
 type FeatureItem = {
+    id: string;
     code: React.JSX.Element;
     description: React.JSX.Element;
 };
 
 const FeatureList: FeatureItem[] = [
     {
+        id: 'hello-world',
         code: <HelloWorldCode />,
         description: <HelloWorldDescription />,
     },
     {
+        id: 'database',
         code: <DatabaseCode />,
         description: <DatabaseDescription />,
     },
     {
+        id: 'benchmark',
         code: <BenchmarkCode />,
         description: <BenchmarkDescription />,
+    },
+    {
+        id: 'sse',
+        code: <SSECode />,
+        description: <SSEDescription />,
     },
 ];
 
@@ -60,7 +73,7 @@ export default function HomepageFeatures(): React.JSX.Element {
                 const reverse = idx % 2 !== 0; // alternate position
 
                 return (
-                    <div className={styles.featureContainer} key={idx}>
+                    <div className={styles.featureContainer} key={idx} id={props.id}>
                         <Feature {...props} reverse={reverse} />
                     </div>
                 )

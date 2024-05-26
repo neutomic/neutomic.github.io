@@ -1,0 +1,38 @@
+import CodeBlock from '@theme/CodeBlock';
+
+## Server-Sent Events
+
+Neutomic makes it easy to build real-time web applications with PHP using Server-Sent Events (SSE).
+
+Server-Sent Events allow the server to push real-time updates to the client over a single HTTP connection. This is particularly useful for applications that require live updates such as notifications, real-time charts, or live feeds.
+
+<CodeBlock language="html" title="example.html">{`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server-Sent Events Example</title>
+</head>
+<body>
+    <div>
+        <h1>Server-Sent Events</h1>
+        // highlight-start
+        <div id="events"></div>
+        // highlight-end
+    </div>
+
+    <script>
+        // highlight-start
+        const eventSource = new EventSource('/sse');
+        const eventsContainer = document.getElementById('events');
+
+        eventSource.addEventListener('message', (event) => {
+            const messageElement = document.createElement('p');
+            messageElement.innerText = event.data;
+
+            eventsContainer.appendChild(messageElement);
+        });
+        // highlight-end
+    </script>
+</body>
+</html>`}</CodeBlock>
