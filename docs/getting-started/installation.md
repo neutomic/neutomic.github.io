@@ -8,7 +8,7 @@ sidebar_position: 2
 
 Before installing Neutomic, ensure your system meets the following requirements:
 
-- **PHP 8.3 or higher**
+- **PHP 8.4 or higher**
 - **Composer**
 - **Git**
 
